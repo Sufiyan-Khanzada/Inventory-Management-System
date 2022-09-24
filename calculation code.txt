@@ -1,0 +1,53 @@
+<sctipt type="text/javascript">
+   // Add new row in the table 
+    $("#add_row").unbind('click').bind('click', function() {
+      var table = $("#product_info_table");
+      var count_table_tbody_tr = $("#product_info_table tbody tr").length;
+      var row_id = count_table_tbody_tr + 1;
+
+      $.ajax({
+          url: base_url + '/Controller_Orders/getTableProductRow/',
+          type: 'post',
+          dataType: 'json',
+          success:function(response) {
+            
+              // console.log(reponse.x);
+               var html = '<tr id="row_'+row_id+'">'+
+                   '<td>'+ 
+                    '<select class="form-control select_group product" data-row-id="'+row_id+'" id="product_'+row_id+'" name="product[]" style="width:100%;" onchange="getProductData('+row_id+')">'+
+                        '<option value=""></option>';
+                        $.each(response, function(index, value) {
+                          html += '<option value="'+value.id+'">'+value.name+'</option>';             
+                        });
+                        
+                      html += '</select>'+
+                    '</td>'+ 
+                    '<td><input type="number" name="qty[]" id="qty_'+row_id+'" class="form-control" onkeyup="getTotal('+row_id+')"></td>'+
+                    '<td><input type="text" name="rate[]" id="rate_'+row_id+'" class="form-control" disabled><input type="hidden" name="rate_value[]" id="rate_value_'+row_id+'" class="form-control"></td>'+
+                    '<td><input type="text" name="amount[]" id="amount_'+row_id+'" class="form-control" disabled><input type="hidden" name="amount_value[]" id="amount_value_'+row_id+'" class="form-control"></td>'+
+                    '<td><button type="button" class="btn btn-danger btn-sm" onclick="removeRow(\''+row_id+'\')"><i class="fa fa-close"></i></button></td>'+
+                    '</tr>';
+
+                if(count_table_tbody_tr >= 1) {
+                $("#product_info_table tbody tr:last").after(html);  
+              }
+              else {
+                $("#product_info_table tbody").html(html);
+              }
+
+              $(".product").select2();
+
+          }
+        });
+
+      return false;
+    });
+
+  }); // /document
+
+    function removeRow(tr_id)
+  {
+    $("#product_info_table tbody tr#row_"+tr_id).remove();
+    subAmount();
+  }
+</sctipt>            
